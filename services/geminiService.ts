@@ -6,12 +6,14 @@ export const processImageWithAI = async (base64Data: string, mimeType: string): 
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
   
   const prompt = `
-    Transform this image into a professional, high-resolution 1:1 square portrait.
+    Transform this image into a professional, high-resolution 1:1 square portrait specifically optimized for a circular crop (profile picture).
+    
     1. Detect the main face in the image.
-    2. Center the face perfectly within the square frame.
-    3. If the image needs to be expanded to fit the square while keeping the face centered, use generative AI to outpaint/fill the missing background, shoulders, and head parts seamlessly.
-    4. Ensure the output is high quality, sharp, and consistent with the original image's lighting and style.
-    5. Return only the edited image.
+    2. Center the face perfectly within the square frame both horizontally and vertically.
+    3. POSITIONING FOR CIRCLE: Ensure the head is not too large. Leave a generous 'safe area' around the head so that when the square is cropped into a circle, no part of the hair or chin is cut off. The top of the head should have a small gap from the top edge.
+    4. If the image needs to be expanded to fit the square while keeping the face centered and appropriately sized, use generative AI to outpaint/fill the missing background, shoulders, and head parts seamlessly.
+    5. Maintain high quality, sharpness, and consistent lighting.
+    6. Return only the edited image.
   `.trim();
 
   const imagePart: ImagePart = {

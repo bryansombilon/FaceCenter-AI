@@ -4,10 +4,11 @@ import { urlToBase64, fileToBase64, downloadImage } from './utils/imageUtils';
 import { processImageWithAI } from './services/geminiService';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { ProcessingResult } from './types';
-import { Camera, Upload, Link as LinkIcon, Download, RefreshCw, X, Image as ImageIcon } from 'lucide-react';
+import { Camera, Upload, Link as LinkIcon, Download, RefreshCw, X, Image as ImageIcon, Circle } from 'lucide-react';
 
 const App: React.FC = () => {
   const [inputUrl, setInputUrl] = useState('');
+  const [showCirclePreview, setShowCirclePreview] = useState(true);
   const [result, setResult] = useState<ProcessingResult>({
     originalUrl: '',
     processedUrl: null,
@@ -76,13 +77,13 @@ const App: React.FC = () => {
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">FaceCenter AI</h1>
         </div>
         <p className="text-slate-500 text-center max-w-xl">
-          Automatic face centering and square outpainting. Our AI generates missing background parts to create the perfect uniform portrait.
+          Automatic face centering and square outpainting. Optimized for circle profile layouts with AI-generated backgrounds.
         </p>
       </header>
 
       <main className="w-full max-w-6xl mt-8 px-4 flex flex-col items-center space-y-8">
         {/* Input Section */}
-        {result.status === 'idle' || result.status === 'error' ? (
+        {(result.status === 'idle' || result.status === 'error') ? (
           <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100">
             <div className="space-y-6">
               {/* URL Input */}
@@ -154,7 +155,7 @@ const App: React.FC = () => {
             <div className="bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
               <div className="flex justify-between items-center mb-3 px-2">
                 <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Original</span>
-                <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">Pre-AI</span>
+                <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">Input Photo</span>
               </div>
               <div className="aspect-square overflow-hidden rounded-xl bg-slate-50 relative group">
                 <img 
@@ -169,17 +170,24 @@ const App: React.FC = () => {
             <div className="bg-white p-4 rounded-2xl shadow-2xl border-2 border-indigo-100 transform md:scale-105">
               <div className="flex justify-between items-center mb-3 px-2">
                 <span className="text-sm font-bold text-indigo-600 uppercase tracking-wider">Processed Result</span>
-                <div className="flex items-center space-x-1 text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded">
-                  <RefreshCw size={12} className="animate-spin-slow" />
-                  <span>Centered & Outpainted</span>
-                </div>
+                <button 
+                  onClick={() => setShowCirclePreview(!showCirclePreview)}
+                  className={`flex items-center space-x-1 text-xs px-2 py-1 rounded transition-colors ${showCirclePreview ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'}`}
+                >
+                  <Circle size={12} fill={showCirclePreview ? "currentColor" : "none"} />
+                  <span>Circle View</span>
+                </button>
               </div>
-              <div className="aspect-square overflow-hidden rounded-xl bg-slate-50 shadow-inner">
+              
+              <div className="aspect-square overflow-hidden bg-slate-50 shadow-inner flex items-center justify-center relative">
                 <img 
                   src={result.processedUrl} 
                   alt="Processed" 
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover transition-all duration-500 ${showCirclePreview ? 'rounded-full scale-[0.98]' : 'rounded-xl'}`}
                 />
+                {showCirclePreview && (
+                    <div className="absolute inset-0 border-[40px] border-white/80 pointer-events-none rounded-xl" style={{ clipPath: 'path("M0 0h100v100H0z M50 50 m-50 0 a 50 50 0 1 0 100 0 a 50 50 0 1 0 -100 0")' }}></div>
+                )}
               </div>
               
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -187,7 +195,7 @@ const App: React.FC = () => {
                   onClick={() => downloadImage(result.processedUrl!)}
                   className="flex-1 bg-indigo-600 text-white px-6 py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all flex items-center justify-center shadow-lg shadow-indigo-200"
                 >
-                  <Download size={20} className="mr-2" /> Download Result
+                  <Download size={20} className="mr-2" /> Download Square
                 </button>
                 <button
                   onClick={reset}
@@ -196,6 +204,9 @@ const App: React.FC = () => {
                   <RefreshCw size={20} className="mr-2" /> Try Another
                 </button>
               </div>
+              <p className="mt-4 text-xs text-center text-slate-400 italic">
+                AI centered the face and added extra padding for the perfect circle crop.
+              </p>
             </div>
           </div>
         )}
@@ -205,7 +216,7 @@ const App: React.FC = () => {
       <footer className="mt-auto pt-12 text-slate-400 text-sm text-center px-4 max-w-2xl">
         <div className="flex items-center justify-center space-x-2 mb-2">
            <ImageIcon size={14} />
-           <p>Powered by Gemini 2.5 Flash for high-fidelity image editing</p>
+           <p>Powered by Gemini 2.5 Flash • High Fidelity Profile Generation</p>
         </div>
         <p>&copy; 2024 FaceCenter AI. Professional portrait outpainting technology.</p>
       </footer>
