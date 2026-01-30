@@ -2,7 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { ImagePart } from "../types";
 
-export const processImageWithAI = async (base64Data: string, mimeType: string): Promise<string> => {
+export const processImageWithAI = async (base64Data: string, mimeType: string, isBlackAndWhite: boolean): Promise<string> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
   
   const prompt = `
@@ -13,7 +13,8 @@ export const processImageWithAI = async (base64Data: string, mimeType: string): 
     3. POSITIONING FOR CIRCLE: Ensure the head is not too large. Leave a generous 'safe area' around the head so that when the square is cropped into a circle, no part of the hair or chin is cut off. The top of the head should have a small gap from the top edge.
     4. If the image needs to be expanded to fit the square while keeping the face centered and appropriately sized, use generative AI to outpaint/fill the missing background, shoulders, and head parts seamlessly.
     5. Maintain high quality, sharpness, and consistent lighting.
-    6. Return only the edited image.
+    ${isBlackAndWhite ? '6. STYLE: Convert the final result into a high-end, professional, high-contrast black and white (monochrome) image.' : ''}
+    7. Return only the edited image.
   `.trim();
 
   const imagePart: ImagePart = {

@@ -4,11 +4,12 @@ import { urlToBase64, fileToBase64, downloadImage } from './utils/imageUtils';
 import { processImageWithAI } from './services/geminiService';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { ProcessingResult } from './types';
-import { Camera, Upload, Link as LinkIcon, Download, RefreshCw, X, Image as ImageIcon, Circle } from 'lucide-react';
+import { Camera, Upload, Link as LinkIcon, Download, RefreshCw, X, Image as ImageIcon, Circle, Palette } from 'lucide-react';
 
 const App: React.FC = () => {
   const [inputUrl, setInputUrl] = useState('');
   const [showCirclePreview, setShowCirclePreview] = useState(true);
+  const [isBlackAndWhite, setIsBlackAndWhite] = useState(false);
   const [result, setResult] = useState<ProcessingResult>({
     originalUrl: '',
     processedUrl: null,
@@ -39,7 +40,7 @@ const App: React.FC = () => {
 
       setResult(prev => ({ ...prev, originalUrl: displayUrl }));
 
-      const processedImage = await processImageWithAI(base64Data, mimeType);
+      const processedImage = await processImageWithAI(base64Data, mimeType, isBlackAndWhite);
       
       setResult(prev => ({
         ...prev,
@@ -86,6 +87,21 @@ const App: React.FC = () => {
         {(result.status === 'idle' || result.status === 'error') ? (
           <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-8 border border-slate-100">
             <div className="space-y-6">
+              {/* Options */}
+              <div className="flex items-center justify-end space-x-4 mb-2">
+                <button
+                  onClick={() => setIsBlackAndWhite(!isBlackAndWhite)}
+                  className={`flex items-center space-x-2 text-sm px-4 py-2 rounded-full transition-all border ${
+                    isBlackAndWhite 
+                    ? 'bg-slate-900 text-white border-slate-900' 
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <Palette size={16} />
+                  <span className="font-medium">{isBlackAndWhite ? 'Black & White ON' : 'Make Black & White'}</span>
+                </button>
+              </div>
+
               {/* URL Input */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700 flex items-center">
