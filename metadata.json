@@ -1,0 +1,7 @@
+{
+  "name": "FaceCenter AI Outpainter",
+  "description": "A high-end photo processing tool that automatically centers faces, crops images to squares, and uses Gemini AI to outpaint missing parts for a seamless, professional finish.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
